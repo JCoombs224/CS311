@@ -46,12 +46,12 @@ struct LinkedList
     void appendNode(int n)
     {
         Node *node = new Node(n);
-        if(head == nullptr)
+        if(head == NULL)
         {
             head = node;
             tail = node;
         }
-        else if(head->next == nullptr)
+        else if(head->next == NULL)
         {
             head->next = node;
             tail = node;
