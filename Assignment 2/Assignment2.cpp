@@ -58,6 +58,21 @@ struct LinkedList
             tail = node;
         }
     }
+    // Adds to the beginning of the list
+    void prependNode(char c)
+    {
+        Node *node = new Node(c);
+        if(head == NULL)
+        {
+            head = node;
+            tail = node;
+        }
+        else
+        {
+            node->next = head;
+            head = node;
+        }
+    }
     // Print the list to the console
     void printList()
     {
@@ -93,7 +108,7 @@ struct Stack
 
     void push(char c)
     {
-        list->appendNode(c);
+        list->prependNode(c);
         size++;
     }
     char pop()
