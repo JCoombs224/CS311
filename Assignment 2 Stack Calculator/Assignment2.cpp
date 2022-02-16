@@ -231,7 +231,7 @@ short int optrID(char c)
         case '#':
             return 6;
     };
-
+    throw invalid_argument("Exception: Unrecognized Operator!");
     return -1;
 }
 
@@ -256,7 +256,7 @@ double operate(double a, char op, double b)
         case '/':
             // Check for division by zero
             if (b == 0)
-                throw invalid_argument("Cannot divide by zero!");
+                throw invalid_argument("Exception: Cannot divide by zero!");
 
             return a / b;
     };
@@ -276,12 +276,14 @@ double evalExpression(const char *exp)
     Stack<double> operands;
     Stack<char> operators;
 
-    char currentOp;
-    int a, b;
-
     operators.push('#');
     exp++;
 
+    // Check for empty expression
+    if(*exp == '#')
+        throw invalid_argument("Exception: Empty Expression");
+
+    // Loop through expression
     while(!(*exp == '#' && operators.peekTop() == '#'))
     {
         // Check if input is an operand
@@ -307,7 +309,7 @@ double evalExpression(const char *exp)
 
             if(operatorMap[prevOpID][currID] == -1)
             {
-                // Handle exception here
+                throw invalid_argument("Exception: Paranthesis Mismatch!");
             }
             else if(operatorMap[prevOpID][currID] == 1)
             {
@@ -321,15 +323,19 @@ double evalExpression(const char *exp)
             }
             else if(operatorMap[prevOpID][currID] == 3)
             {
-                currentOp = operators.pop();
-                a = operands.pop();
-                b = operands.pop();
+                char currentOp = operators.pop();
+                double a = operands.pop();
+                double b = operands.pop();
                 operands.push(operate(b, currentOp, a));
             }
         }
-        else
+        else if(*exp == ' ')
         {
             exp++;
+        }
+        else // Unrecognized operator
+        {
+            throw invalid_argument("Exception: Unrecognized Operator.");
         }
     }
     return operands.peekTop();
@@ -338,7 +344,7 @@ double evalExpression(const char *exp)
 // Main Function
 int main()
 {
-    const char *expression = "#5 / 5#";
+    const char *expression = "#3.5+20/4#";
 
     try
     {
