@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string>
+#include <stdexcept>
 using namespace std;
 
 // ************************** CLASSES **************************
@@ -132,7 +133,7 @@ class Stack
         T pop()
         {
             if(size < 1)
-                return 0;
+                throw Underflow();
             
             Node<T> *temp = list->head;
             list->head = list->head->next;
@@ -144,7 +145,7 @@ class Stack
         T peekTop()
         {
             if(size < 1)
-                return 0;
+                throw Underflow();
             
             return list->head->val;
         }
@@ -160,6 +161,8 @@ class Stack
         {
             delete list;
         }
+        class Overflow{};
+        class Underflow{};
 };
 
 // ************************** PROGRAM FUNCTIONS **************************
@@ -251,8 +254,12 @@ double operate(double a, char op, double b)
         case '*':
             return a * b;
         case '/':
+            // Check for division by zero
+            if (b == 0)
+                throw invalid_argument("Cannot divide by zero!");
+
             return a / b;
-    }
+    };
 
     return -1;
 }
@@ -317,7 +324,7 @@ double evalExpression(const char *exp)
                 currentOp = operators.pop();
                 a = operands.pop();
                 b = operands.pop();
-                operands.push(operate(a, currentOp, b));
+                operands.push(operate(b, currentOp, a));
             }
         }
         else
@@ -331,9 +338,17 @@ double evalExpression(const char *exp)
 // Main Function
 int main()
 {
-    const char *expression = "#5 + 5 * (10 * 10)#";
+    const char *expression = "#5 / 5#";
 
-    cout << evalExpression(expression) << endl;
-    
+    try
+    {
+        cout << evalExpression(expression) << endl;
+    }
+    catch(exception& e)
+    {
+        cerr << e.what() << endl;
+        return -1;
+    }
+
     return 0;
 }
