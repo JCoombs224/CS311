@@ -9,6 +9,12 @@ using namespace std;
 
 // ************************** CLASSES **************************
 
+/**
+ * @brief Node object that cotains an element and a pointer to the next
+ *        Node.
+ * 
+ * @tparam T - Type of variable stored in the Node.
+ */
 template<class T>
 struct Node
 {
@@ -26,6 +32,8 @@ struct Node
 /**
  * @brief Singly LinkedList class that has a pointer to the head and tail
  *        node. Contains an append function to add node after the tail.
+ * 
+ * @tparam T - Type of variable stored in the LinkedList
  */
 template<class T>
 struct LinkedList
@@ -338,13 +346,14 @@ double evalExpression(const char *exp)
             throw invalid_argument("Exception: Unrecognized Operator.");
         }
     }
+
     return operands.peekTop();
 }
 
 // Main Function
 int main()
 {
-    const char *expression = "#3.5+20/4#";
+    const char *expression = "# 3.5 + 20 / 4 #";
 
     try
     {
