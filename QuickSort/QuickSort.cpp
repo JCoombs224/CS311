@@ -43,18 +43,18 @@ void QuickSort(int arr[], int p, int r)
 int main()
 {
     int arr[] = {555, 1, 46, 92, 4, 98, 3};
-    int n = 7;
+    int n = sizeof(arr)/sizeof(arr[0]);
 
     cout << "A unsorted: ";
     for(int i = 0; i < n; i++)
-        cout << arr[i] << ", ";
+        cout << arr[i] << " ";
 
     cout << endl << "A sorted with QuickSort: ";
 
     QuickSort(arr, 0, n);
 
     for(int i = 0; i < n; i++)
-        cout << arr[i] << ", ";
+        cout << arr[i] << " ";
 
     cout << endl;
 }
