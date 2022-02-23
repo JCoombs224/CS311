@@ -182,7 +182,7 @@ class Stack
  *        3 = '>'
  *        -1 = 'Error'
  */
-int operatorMap[7][7] =
+short int operatorMap[7][7] =
 {
   // +  -  *  /  (  )  #
     {3, 3, 1, 1, 1, 3, 3}, // +
@@ -353,7 +353,7 @@ double evalExpression(const char *exp)
 // Main Function
 int main()
 {
-    const char *expression = "# 3.5 + 20 / 4 #";
+    const char *expression = "# 5 * 5 * 5 #";
 
     try
     {
