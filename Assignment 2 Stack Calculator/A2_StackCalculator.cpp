@@ -315,21 +315,21 @@ double evalExpression(const char *exp)
             int prevOpID = optrID(operators.peekTop());
             int currID = optrID(*exp);
 
-            if(operatorMap[prevOpID][currID] == -1)
+            if(operatorMap[prevOpID][currID] == -1) // Error
             {
                 throw invalid_argument("Exception: Paranthesis Mismatch!");
             }
-            else if(operatorMap[prevOpID][currID] == 1)
+            else if(operatorMap[prevOpID][currID] == 1) // <
             {
                 operators.push(*exp);
                 exp++;
             }
-            else if(operatorMap[prevOpID][currID] == 2)
+            else if(operatorMap[prevOpID][currID] == 2) // ==
             {
                 operators.pop();
                 exp++;
             }
-            else if(operatorMap[prevOpID][currID] == 3)
+            else if(operatorMap[prevOpID][currID] == 3) // >
             {
                 char currentOp = operators.pop();
                 double a = operands.pop();

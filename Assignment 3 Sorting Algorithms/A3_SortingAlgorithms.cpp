@@ -12,7 +12,7 @@ void swap(int arr[], int q, int i)
     arr[i] = temp;
 }
 
-// QuickSort
+// *** QuickSort ***
 
 int Partition(int arr[], int p, int r)
 {
