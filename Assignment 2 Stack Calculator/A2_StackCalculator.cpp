@@ -301,10 +301,20 @@ double evalExpression(const char *exp)
             // continue to add digits until the pointer is no longer a numeric value.
 
             string temp = "";
-            while((*exp >= '0' && *exp <= '9') || *exp == '.')
+            while((*exp >= '0' && *exp <= '9'))
             {
                 temp += *exp;
                 exp++;
+            }
+            if(*exp == '.') // if there is a decimal, add that and keep adding numbers after the decimal
+            {
+                temp += *exp;
+                exp++;
+                while((*exp >= '0' && *exp <= '9'))
+                {
+                    temp += *exp;
+                    exp++;
+                }
             }
 
             // Convert temp string to double and add to operands
@@ -353,7 +363,7 @@ double evalExpression(const char *exp)
 // Main Function
 int main()
 {
-    const char *expression = "# 5 * 5 * 5 #";
+    const char *expression = "# 5 + ((5/2) + 2.5) * 10 #"; // Output should be 55
 
     try
     {
