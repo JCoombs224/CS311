@@ -143,10 +143,10 @@ class Stack
             if(size < 1)
                 throw Underflow();
             
-            Node<T> *temp = list->head;
+            T val = list->head->val;
             list->head = list->head->next;
             size--;
-            return temp->val;
+            return val;
         }
 
         // Returns the value of the element on top of the Stack
@@ -216,6 +216,7 @@ bool isOperator(char c)
 /**
  * @brief Returns the ID of the operator.
  *        The ID is the coordiante used in the precedence map.
+ * @ids   id:char - [(0:'+'), (1:'-'), (2:'*'), (3:'/'), (4:'('), (5:')'), (6:'#')]
  * 
  * @param c - operator symbol
  * @return short int - ID
@@ -239,6 +240,7 @@ short int optrID(char c)
         case '#':
             return 6;
     };
+    // No valid operator id found so throw exception
     throw invalid_argument("Exception: Unrecognized Operator!");
     return -1;
 }
@@ -325,21 +327,22 @@ double evalExpression(const char *exp)
             int prevOpID = optrID(operators.peekTop());
             int currID = optrID(*exp);
 
+            // Get the inequality from the precedence map based on operator ids
             if(operatorMap[prevOpID][currID] == -1) // Error
             {
                 throw invalid_argument("Exception: Paranthesis Mismatch!");
             }
-            else if(operatorMap[prevOpID][currID] == 1) // <
+            else if(operatorMap[prevOpID][currID] == 1) // 1 = '<'
             {
                 operators.push(*exp);
                 exp++;
             }
-            else if(operatorMap[prevOpID][currID] == 2) // ==
+            else if(operatorMap[prevOpID][currID] == 2) // 2 = '=='
             {
                 operators.pop();
                 exp++;
             }
-            else if(operatorMap[prevOpID][currID] == 3) // >
+            else if(operatorMap[prevOpID][currID] == 3) // 3 = '>'
             {
                 char currentOp = operators.pop();
                 double a = operands.pop();
@@ -347,7 +350,7 @@ double evalExpression(const char *exp)
                 operands.push(operate(b, currentOp, a));
             }
         }
-        else if(*exp == ' ')
+        else if(*exp == ' ') // Skip whitespace
         {
             exp++;
         }
@@ -356,14 +359,16 @@ double evalExpression(const char *exp)
             throw invalid_argument("Exception: Unrecognized Operator.");
         }
     }
-
+    if(operands.getSize() > 1)
+        throw invalid_argument("Exception: Paranthesis after Operand.");
+    
     return operands.peekTop();
 }
 
 // Main Function
 int main()
 {
-    const char *expression = "# 5 + ((5/2) + 2.5) * 10 #"; // Output should be 55
+    const char *expression = "# (5 + ((5/2) + 2.5) * 10) / 5 #"; // Output should be 11
 
     try
     {

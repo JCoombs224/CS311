@@ -3,6 +3,7 @@
 // Email: coomb010@cougars.csusm.edu
 
 #include <iostream>
+#include <string>
 using namespace std;
 
 void swap(int arr[], int q, int i)
@@ -148,30 +149,101 @@ void MergeSort(int arr[], int p, int r)
 
 int main()
 {
-    int arr[] = {555, 1, 46, 92, 4, 98, 3};
-    int n = sizeof(arr)/sizeof(arr[0]);
+    int size = 0;
+    string input, temp = "";
+    int arr[50];
 
-    cout << "A unsorted: ";
-    for(int i = 0; i < n; i++)
+    cout << "Enter up to 50 integers seperated by spaces to be sorted: ";
+    getline(cin, input);
+
+    // Get set of integers from user.
+    for(int i = 0; i < input.size(); i++)
+    {
+        // Break loop if max elements have been added to array.
+        if(size > 49)
+        {
+            cout << "Error: Array limit reached the last element is: " << arr[49] << endl;
+            break;
+        }
+        if(input[i] >= '0' && input[i] <= '9')
+        {
+            temp += input[i];
+        }
+        else if(input[i] == ' ')
+        {
+            if(temp != "")
+            {
+                arr[size++] = stoi(temp);
+                temp = "";
+            }
+        }
+        else
+        {
+            cerr << "Invalid input! Exiting...\n\n";
+            return -1;
+        }
+    }
+    // Add last element to array
+    if(size < 50 && temp != "")
+    {
+        arr[size++] = stoi(temp);
+        temp = "";
+    }
+
+    int selection;
+
+    // Display sorting menu
+    cout << "\n\n*** Sorting Algorithm Menu ***\n";
+    cout << "1 - Selection Sort\n";
+    cout << "2 - Bubble Sort\n";
+    cout << "3 - Insertion Sort\n";
+    cout << "4 - Quick Sort\n";
+    cout << "5 - Merge Sort\n";
+    cout << "6 - Heap Sort\n";
+
+    // Get menu selection
+    cin >> selection;
+
+    cout << "\nOriginal Array: ";
+    for(int i = 0; i < size; i++)
         cout << arr[i] << " ";
-
-    //cout << endl << "A sorted with QuickSort: ";
-    //QuickSort(arr, 0, n);
     
-    //cout << endl << "A sorted with MergeSort: ";
-    //MergeSort(arr, n);
+    cout << "\n\nArray Sorted With ";
+    switch(selection)
+    {
+        case 1:
+            //SelectionSort(arr, size);
+            cout << "Selection Sort: ";
+            break;
+        case 2:
+            BubbleSort(arr, size);
+            cout << "Bubble Sort: ";
+            break;
+        case 3:
+            InsertionSort(arr, size);
+            cout << "Insertion Sort: ";
+            break;
+        case 4:
+            QuickSort(arr, 0, size);
+            cout << "Quick Sort: ";
+            break;
+        case 5:
+            MergeSort(arr, size);
+            cout << "Merge Sort: ";
+            break;
+        case 6:
+            //HeapSort(arr, size);
+            cout << "Heap Sort: ";
+            break;
+        default:
+            cerr << "Please enter a valid selection!";
+            break;
+    }
 
-    //cout << endl << "A sorted with BubbleSort: ";
-    //BubbleSort(arr, n);
-
-    //cout << endl << "A sorted with InsertionSort: ";
-    //InsertionSort(arr, n);
-
-    cout << endl << "A sorted with MergeSort: ";
-    MergeSort(arr, 0, n);
-
-    for(int i = 0; i < n; i++)
+    for(int i = 0; i < size; i++)
         cout << arr[i] << " ";
 
-    cout << endl;
+    cout << "\n\n";
+
+    return 0;
 }
