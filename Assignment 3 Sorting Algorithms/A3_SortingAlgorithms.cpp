@@ -146,6 +146,11 @@ void MergeSort(int arr[], int p, int r)
     Merge(arr, p, q, r);
 }
 
+void HeapSort(int arr[])
+{
+    // Use max heap here
+}
+
 
 int main()
 {
