@@ -368,7 +368,7 @@ double evalExpression(const char *exp)
 // Main Function
 int main()
 {
-    const char *expression = "# (5 + ((5/2) + 2.5) * 10) / 5 #"; // Output should be 11
+    const char *expression = "# 5 * 5 + 5 * 2 #"; // Output should be 11
 
     try
     {

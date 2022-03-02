@@ -245,5 +245,6 @@ int main()
 
     cout << "\n\n";
 
+    system("pause"); // wait for input before closing console (windows)
     return 0;
 }
