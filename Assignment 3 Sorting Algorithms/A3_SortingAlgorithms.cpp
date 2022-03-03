@@ -13,9 +13,9 @@ void swap(int arr[], int q, int i)
     arr[i] = temp;
 }
 
-// *** MergeSort ***
+// *** Selection Sort ***
 
-void MergeSort(int arr[], int n)
+void SelectionSort(int arr[], int n)
 {   
     for(int i = n-1; i >= 0; i--)
     {
@@ -30,6 +30,12 @@ void MergeSort(int arr[], int n)
             }
         }
         swap(arr, swapIndex, i);
+
+        // Print iteration
+        cout << "Iteration #" << n-i << ": ";
+            for(int j = 0; j < n; j++)
+                cout << arr[j] << " ";
+            cout << endl;
     }
 }
 
@@ -37,9 +43,11 @@ void MergeSort(int arr[], int n)
 void BubbleSort(int arr[], int n)
 {
     bool didSwap = true;
+    int count = 0;
 
     while(didSwap)
     {
+        count++;
         didSwap = false;
         for(int i = 0; i < n-1; i++)
         {
@@ -48,6 +56,13 @@ void BubbleSort(int arr[], int n)
                 swap(arr, i, i+1);
                 didSwap = true;
             }
+        }
+        if(didSwap)
+        {
+            cout << "Iteration #" << count << ": ";
+            for(int i = 0; i < n; i++)
+                cout << arr[i] << " ";
+            cout << endl;
         }
     }
 }
@@ -65,6 +80,11 @@ void InsertionSort(int arr[], int n)
             k--;
             j--;
         }
+
+        cout << "Iteration #" << i << ": ";
+        for(int x = 0; x < n; x++)
+            cout << arr[x] << " ";
+        cout << endl;
     }
 }
 
@@ -82,6 +102,12 @@ int Partition(int arr[], int p, int r)
         i++;
     }
     swap(arr,p,q-1);
+
+    cout << "Swap : ";
+    for(int i = 0; i < 21; i++) // TODO: CHANGE 20 to arr size
+        cout << arr[i] << " ";
+    cout << endl;
+
     return q;
 }
 
@@ -100,7 +126,7 @@ void QuickSort(int arr[], int p, int r)
 // MergeSort
 void Merge(int arr[], int p, int q, int r)
 {
-    int bArr[7];
+    int bArr[50];
     int i = p, k = p;
     int j = q+1;
 
@@ -122,16 +148,15 @@ void Merge(int arr[], int p, int q, int r)
     while(j <= r)
         bArr[k++] = arr[j++];
     
-    for(int i = p; i < r; i++)
+    for(int i = p; i <= r; i++)
     {
         arr[i] = bArr[i];
     }
-
     
-    for(int i = 0; i < r; i++)
-        cout << bArr[i] << " ";
+    cout << "Merge : ";
+    for(int z = 0; z < 21; z++) // TODO: CHANGE 20 to arr size
+        cout << arr[z] << " ";
     cout << endl;
-    
 }
 
 void MergeSort(int arr[], int p, int r)
@@ -212,37 +237,38 @@ int main()
     cout << "\nOriginal Array: ";
     for(int i = 0; i < size; i++)
         cout << arr[i] << " ";
+    cout << "\n\n";
     
-    cout << "\n\nArray Sorted With ";
+    //cout << "\n\nArray Sorted With ";
     switch(selection)
     {
         case 1:
-            //SelectionSort(arr, size);
-            cout << "Selection Sort: ";
+            SelectionSort(arr, size);
+            cout << "\nSelection Sorted: ";
             break;
         case 2:
             BubbleSort(arr, size);
-            cout << "Bubble Sort: ";
+            cout << "\nBubble Sorted: ";
             break;
         case 3:
             InsertionSort(arr, size);
-            cout << "Insertion Sort: ";
+            cout << "\nInsertion Sorted: ";
             break;
         case 4:
             QuickSort(arr, 0, size);
-            cout << "Quick Sort: ";
+            cout << "\nQuick Sorted: ";
             break;
         case 5:
-            MergeSort(arr, size);
-            cout << "Merge Sort: ";
+            MergeSort(arr, 0, size-1);
+            cout << "\nMerge Sorted: ";
             break;
         case 6:
             //HeapSort(arr, size);
-            cout << "Heap Sort: ";
+            cout << "\nHeap Sorted: ";
             break;
         default:
             cerr << "Please enter a valid selection!";
-            break;
+            return -1;
     }
 
     for(int i = 0; i < size; i++)
@@ -250,6 +276,6 @@ int main()
 
     cout << "\n\n";
 
-    system("pause"); // wait for input before closing console (windows)
+    //system("pause"); // wait for input before closing console (windows)
     return 0;
 }
