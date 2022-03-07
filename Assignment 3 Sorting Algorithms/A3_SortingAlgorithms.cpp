@@ -6,6 +6,8 @@
 #include <string>
 using namespace std;
 
+int arrSize; // global array size variable only used for printing
+
 void swap(int arr[], int q, int i)
 {
     int temp = arr[q];
@@ -13,8 +15,15 @@ void swap(int arr[], int q, int i)
     arr[i] = temp;
 }
 
-// *** Selection Sort ***
+// ****************** Sorting Algorithms ******************
 
+/**
+ * @brief Selection Sort algorithm.
+ *        Time Complexity: O(n^2)
+ * 
+ * @param arr - array to be sorted
+ * @param n - size of the array
+ */
 void SelectionSort(int arr[], int n)
 {   
     for(int i = n-1; i >= 0; i--)
@@ -39,7 +48,13 @@ void SelectionSort(int arr[], int n)
     }
 }
 
-// Bubble Sort
+/**
+ * @brief Bubble Sort algorithm.
+ *        Time Complexity: O(n^2)
+ * 
+ * @param arr - array to be sorted
+ * @param n - size of the array
+ */
 void BubbleSort(int arr[], int n)
 {
     bool didSwap = true;
@@ -67,7 +82,13 @@ void BubbleSort(int arr[], int n)
     }
 }
 
-// Insertion Sort
+/**
+ * @brief Insertion Sort algorithm.
+ *        Time Complexity: O(n^2)
+ * 
+ * @param arr - array to be sorted
+ * @param n - size of the array
+ */
 void InsertionSort(int arr[], int n)
 {
     for(int i = 1; i < n; i++)
@@ -88,7 +109,14 @@ void InsertionSort(int arr[], int n)
     }
 }
 
-// *** QuickSort ***
+/**
+ * @brief Function used to partition array for the Quick Sort algorithm
+ * 
+ * @param arr - array that is being sorted
+ * @param p - low
+ * @param r - high
+ * @return int 
+ */
 int Partition(int arr[], int p, int r)
 {
     int pivot = arr[p];
@@ -103,14 +131,17 @@ int Partition(int arr[], int p, int r)
     }
     swap(arr,p,q-1);
 
-    cout << "Swap : ";
-    for(int i = 0; i < 21; i++) // TODO: CHANGE 20 to arr size
-        cout << arr[i] << " ";
-    cout << endl;
-
     return q;
 }
 
+/**
+ * @brief Quick Sort algorithm.
+ *        Time Complexity: O(nlog(n))
+ * 
+ * @param arr - array to be sorted
+ * @param p - low index
+ * @param r - high index
+ */
 void QuickSort(int arr[], int p, int r)
 {
     if(p >= r)
@@ -119,11 +150,23 @@ void QuickSort(int arr[], int p, int r)
     {
         int q = Partition(arr, p, r);
         QuickSort(arr, p, q-1);
+        cout << "Swap : ";
+        for(int i = 0; i < arrSize; i++) // TODO: make print better
+            cout << arr[i] << " ";
+        cout << endl;
         QuickSort(arr, q, r);
     }
 }
 
-// MergeSort
+/**
+ * @brief Merge function used in the Merge Sort algorithm.
+ *        Combines two subarrays into parent array.
+ * 
+ * @param arr - array being sorted
+ * @param p - low index
+ * @param q - middle index
+ * @param r - high index
+ */
 void Merge(int arr[], int p, int q, int r)
 {
     int bArr[50];
@@ -154,11 +197,19 @@ void Merge(int arr[], int p, int q, int r)
     }
     
     cout << "Merge : ";
-    for(int z = 0; z < 21; z++) // TODO: CHANGE 20 to arr size
+    for(int z = 0; z < arrSize; z++)
         cout << arr[z] << " ";
     cout << endl;
 }
 
+/**
+ * @brief Merge Sort algorithm.
+ *        Time Complexity: O(nlog(n))
+ * 
+ * @param arr - array to be sorted
+ * @param p - low index
+ * @param r - high index
+ */
 void MergeSort(int arr[], int p, int r)
 {
     if(p == r)
@@ -171,15 +222,166 @@ void MergeSort(int arr[], int p, int r)
     Merge(arr, p, q, r);
 }
 
-void HeapSort(int arr[])
+/**
+ * @brief MaxHeap class rearranges an internal or external array into a Max Heap
+ *        data structure. Can be implemented in order to perform a heap sort on an
+ *        array of integers.
+ */
+class MaxHeap
 {
-    // Use max heap here
+    int size, capacity;
+    int *arr;
+    public:
+        MaxHeap(){} // Default constructor
+
+        // Constructor with size
+        MaxHeap(int n)
+        {
+            size = 0;
+            capacity = n;
+            arr = new int[capacity];
+        }
+
+        // Returns the index of the parent for i.
+        int parent(int i)
+        {
+            return (i-1)/2;
+        }
+        // Returns the index of i's left node.
+        int left(int i)
+        {
+            return 2*i + 1;
+        }
+        // Returns the index of i's right node.
+        int right(int i)
+        {
+            return 2*i + 2;
+        }
+        // Returns the size of the heap.
+        int getSize()
+        {
+            return size;
+        }
+        // Returns whether the node at i is a leaf node or not.
+        bool isLeaf(int i)
+        {
+            return (i >= size/2);
+        }
+        // Returns the max value of the heap.
+        int getMax()
+        {
+            return arr[0];
+        }
+
+        // Takes in an external array and turns it into a MaxHeap structure.
+        void heapify(int *array, int n)
+        {
+            arr = array;
+            size = n;
+            capacity = n;
+            int half = size/2 - 1;
+            for(int i = half; i >= 0; i--)
+                siftDown(i);
+        }
+
+        // Sifts the node at i up until it is smaller than its parent
+        void siftUp(int i)
+        {
+            while(i > 0 && arr[parent(i)] < arr[i])
+            {
+                swap(arr, i, parent(i));
+                i = parent(i);
+            }
+        }
+        // Sifts the node at i down until it is a leaf or larger than both the left
+        // and right nodes.
+        void siftDown(int i)
+        {
+            while(!isLeaf(i))
+            {
+                int l = left(i);
+                int r = right(i);
+                int larger = l;
+                if(r < size)
+                    larger = (arr[l] > arr[r]) ? l : r;
+                if(arr[i] >= arr[larger])
+                    break;
+                swap(arr, i, larger);
+                i = larger;
+            }
+        }
+        // Inserts a value into the heap
+        void insert(int k)
+        {
+            if(size >= capacity)
+                throw Overflow();
+            int i = size;
+            arr[i] = k;
+            siftUp(i);
+            size++;
+        }
+        // Removes the value at i and returns the value
+        int removeAt(int i)
+        {
+            if(i < 0 || size <= i) throw UnderFlow();
+            if(size == 1) return arr[--size];
+
+            int result = arr[i];
+            arr[i] = arr[--size];
+            if(arr[i] < result)
+                siftDown(i);
+            else
+                siftUp(i);
+            
+            return result;
+        }
+        // Removes the root of the heap which is the max value and returns it.
+        int extractMax()
+        {
+            if(size <= 0) throw UnderFlow();
+            if(size == 1) return arr[--size];
+
+            int res = arr[0];
+            arr[0] = arr[--size];
+            siftDown(0);
+
+            return res;
+        }
+
+        // Heap Exceptions
+        class Overflow{};
+        class UnderFlow{};
+};
+
+/**
+ * @brief Heap Sort algorithm.
+ *        Time Complexity: O(nlog(n))
+ * 
+ * @param arr - array to be sorted
+ * @param n - size of the array
+ */
+void HeapSort(int arr[], int n)
+{
+    MaxHeap heap(n);
+    heap.heapify(arr, n);
+    int i = n-1;
+    int count = 1; // for printing purposes
+
+    while(heap.getSize() > 0)
+    {
+        arr[i--] = heap.extractMax();
+
+        cout << "Extract Max " << count++ << ": ";
+        for(int j = 0; j < arrSize; j++)
+            cout << arr[j] << " ";
+        cout << endl;
+    }
 }
 
-
+// Main Function
 int main()
 {
-    int size = 0;
+    arrSize = 0;
     string input, temp = "";
     int arr[50];
 
@@ -190,7 +392,7 @@ int main()
     for(int i = 0; i < input.size(); i++)
     {
         // Break loop if max elements have been added to array.
-        if(size > 49)
+        if(arrSize > 49)
         {
             cout << "Error: Array limit reached the last element is: " << arr[49] << endl;
             break;
@@ -203,7 +405,7 @@ int main()
         {
             if(temp != "")
             {
-                arr[size++] = stoi(temp);
+                arr[arrSize++] = stoi(temp);
                 temp = "";
             }
         }
@@ -214,9 +416,9 @@ int main()
         }
     }
     // Add last element to array
-    if(size < 50 && temp != "")
+    if(arrSize < 50 && temp != "")
     {
-        arr[size++] = stoi(temp);
+        arr[arrSize++] = stoi(temp);
         temp = "";
     }
 
@@ -235,35 +437,34 @@ int main()
     cin >> selection;
 
     cout << "\nOriginal Array: ";
-    for(int i = 0; i < size; i++)
+    for(int i = 0; i < arrSize; i++)
         cout << arr[i] << " ";
     cout << "\n\n";
     
-    //cout << "\n\nArray Sorted With ";
     switch(selection)
     {
         case 1:
-            SelectionSort(arr, size);
+            SelectionSort(arr, arrSize);
             cout << "\nSelection Sorted: ";
             break;
         case 2:
-            BubbleSort(arr, size);
+            BubbleSort(arr, arrSize);
             cout << "\nBubble Sorted: ";
             break;
         case 3:
-            InsertionSort(arr, size);
+            InsertionSort(arr, arrSize);
             cout << "\nInsertion Sorted: ";
             break;
         case 4:
-            QuickSort(arr, 0, size);
+            QuickSort(arr, 0, arrSize);
             cout << "\nQuick Sorted: ";
             break;
         case 5:
-            MergeSort(arr, 0, size-1);
+            MergeSort(arr, 0, arrSize-1);
             cout << "\nMerge Sorted: ";
             break;
         case 6:
-            //HeapSort(arr, size);
+            HeapSort(arr, arrSize);
             cout << "\nHeap Sorted: ";
             break;
         default:
@@ -271,7 +472,7 @@ int main()
             return -1;
     }
 
-    for(int i = 0; i < size; i++)
+    for(int i = 0; i < arrSize; i++)
         cout << arr[i] << " ";
 
     cout << "\n\n";
