@@ -5,6 +5,13 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+// used for sleep function
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
 using namespace std;
 
 struct Node
@@ -12,6 +19,7 @@ struct Node
     int val;
     Node *left;
     Node *right;
+
     Node(int data)
     {
         val = data;
@@ -21,38 +29,25 @@ struct Node
     ~Node(){}
 };
 
+struct TreeBranch
+{
+    TreeBranch *prev;
+    string str;
+ 
+    TreeBranch(TreeBranch *prev, string str)
+    {
+        this->prev = prev;
+        this->str = str;
+    }
+};
+
+
 class BST
 {
     private:
         Node *root;
         int size = 0;
-        void preOrder(Node *node)
-        {
-            if(node != NULL)
-            {
-                cout << node->val << ' ';
-                preOrder(node->left);
-                preOrder(node->right);
-            }
-        }
-        void inOrder(Node *node)
-        {
-            if(node != NULL)
-            {
-                inOrder(node->left);
-                cout << node->val << ' ';
-                inOrder(node->right);
-            }
-        }
-        void postOrder(Node *node)
-        {
-            if(node != NULL)
-            {
-                postOrder(node->left);
-                postOrder(node->right);
-                cout << node->val << ' ';
-            }
-        }
+
     public:
         // Constructor
         BST()
@@ -78,6 +73,8 @@ class BST
                 node->left = insert(node->left, val);
             else if(node->val < val)
                 node->right = insert(node->right, val);
+            else if(node->val == val) // if value being inserted the same as current node insert to the left
+                node->left = insert(node->left, val);
 
             return node;
         }
@@ -93,10 +90,14 @@ class BST
                 return search(node->left, key);
             return search(node->right, key);
         }
-        void remove(int key)
+        bool remove(int key)
         {
             root = remove(root, key);
+            if(root == NULL)
+                return false;
+
             size--;
+            return true;
         }
         Node* remove(Node *node, int key)
         {
@@ -125,13 +126,13 @@ class BST
                     return temp;
                 }
                 
-                Node *temp = leftmostNode(node->left);
+                Node *temp = rightmostNode(node->left);
                 node->val = temp->val;
                 node->left = remove(node->left, temp->val);
             }
             return node;
         }
-        Node* leftmostNode(Node *node)
+        Node* rightmostNode(Node *node)
         {
             Node *current = node;
 
@@ -163,29 +164,108 @@ class BST
             preOrder(root);
             cout << endl;
         }
+        void preOrder(Node *node)
+        {
+            if(node != NULL)
+            {
+                cout << node->val << ' ';
+                preOrder(node->left);
+                preOrder(node->right);
+            }
+        }
         void printInOrder()
         {
             inOrder(root);
             cout << endl;
+        }
+        void inOrder(Node *node)
+        {
+            if(node != NULL)
+            {
+                inOrder(node->left);
+                cout << node->val << ' ';
+                inOrder(node->right);
+            }
         }
         void printPostOrder()
         {
             postOrder(root);
             cout << endl;
         }
-        // Printing
-        void print()
+        void postOrder(Node *node)
         {
-            print(root, 0);
+            if(node != NULL)
+            {
+                postOrder(node->left);
+                postOrder(node->right);
+                cout << node->val << ' ';
+            }
         }
-        void print(Node *root, int space)
+        // Printing
+        void printTree()
         {
-            if(root == NULL)
+            printTree(root, nullptr, false);
+        }
+        // TODO: Make custom printing function
+        // Helper function to print branches of the binary tree
+        void showBranches(TreeBranch *p)
+        {
+            if (p == nullptr) {
                 return;
-            
-            
+            }
+        
+            showBranches(p->prev);
+            cout << p->str;
+        }
+        void printTree(Node* root, TreeBranch *prev, bool isLeft)
+        {
+            if (root == nullptr) {
+                return;
+            }
+        
+            string prev_str = "    ";
+            TreeBranch *branch = new TreeBranch(prev, prev_str);
+        
+            printTree(root->right, branch, true);
+        
+            if (!prev) {
+                branch->str = "---";
+            }
+            else if (isLeft)
+            {
+                branch->str = ".---";
+                prev_str = "   |";
+            }
+            else {
+                branch->str = "`---";
+                prev->str = prev_str;
+            }
+        
+            showBranches(branch);
+            cout << " " << root->val << endl;
+        
+            if (prev) {
+                prev->str = prev_str;
+            }
+            branch->str = "   |";
+        
+            printTree(root->left, branch, false);
+        }
+
+        // Destructor
+        ~BST()
+        {
+            while(root != NULL)
+                remove(root->val);
         }
 };
+
+/*********** MAIN PROGRAM ***********/
+void traverseTree(BST&);
+void searchNode(BST&);
+void insertNode(BST&);
+void deleteNode(BST&);
+void displayTree(BST&);
 
 int main()
 {
@@ -236,7 +316,60 @@ int main()
         tree.insert(arr[i]);
 
     int selection;
+    
+    // Program loop
+    while(true)
+    {
+        // Display operation menu
+        cout << "\nBinary Search Tree Operation Menu\n\n";
+        cout << "1. Tree Traversal\n";
+        cout << "2. Search Node\n";
+        cout << "3. Insert Node\n";
+        cout << "4. Delete Node\n";
+        cout << "5. Display Tree\n";
+        cout << "6. Exit Program\n";
 
+        cout << "\nEnter selection: ";
+        cin >> selection;
+
+        // Run selected function
+        switch(selection)
+        {
+            case 1:
+                traverseTree(tree);
+                Sleep(2000);
+                break;
+            case 2:
+                searchNode(tree);
+                Sleep(2000);
+                break;
+            case 3:
+                insertNode(tree);
+                Sleep(2000);
+                break;
+            case 4:
+                deleteNode(tree);
+                Sleep(2000);
+                break;
+            case 5:
+                cout << endl;
+                tree.printTree();
+                Sleep(2000);
+                break;
+            case 6:
+                return 0;
+            default:
+                cerr << "Please enter a valid menu selection!\n\n";
+                Sleep(1000);
+                break;
+        }
+    }
+
+    return 1;
+}
+
+void traverseTree(BST &tree)
+{
     // 1. Tree Traversal
     cout << "\nPre-order tree traversal: "; 
     tree.printPreOrder();
@@ -244,7 +377,9 @@ int main()
     tree.printInOrder();
     cout << "Post-order tree traversal: "; 
     tree.printPostOrder();
-
+}
+void searchNode(BST &tree)
+{
     // 2. Searching
     int key;
     cout << "\nEnter an integer to search for in the tree: ";
@@ -256,28 +391,37 @@ int main()
     else
     {
         cout << "Node with value " << key << " was found in BST.\n";
-        cout << key << " left node value: ";
+        cout << key << "'s sub-tree\n";
+        tree.printTree(node, nullptr, false);
+        /*cout << key << " left node value: ";
         if(node->left == NULL) cout << "NULL\n"; else cout << node->left->val << endl;
         cout << key << " right node value: ";
-        if(node->right == NULL) cout << "NULL\n"; else cout << node->right->val << endl;
+        if(node->right == NULL) cout << "NULL\n"; else cout << node->right->val << endl;*/
     }
-
+}
+void insertNode(BST &tree)
+{
     // 3. Insertion
+    int key;
     cout << "\nEnter a new value to be added into the binary tree: ";
     cin >> key;
     tree.insert(key);
     cout << "Tree with " << key << " inserted: ";
     tree.printInOrder();
-
+}
+void deleteNode(BST &tree)
+{
     // 4. Deletion
+    int key;
     cout << "\nEnter a value to be deleted from the tree: ";
     cin >> key;
-    tree.remove(key);
-    cout << "Tree with " << key << " removed: ";
-    tree.printInOrder();
-
-    // 5. Print tree
-    tree.print();
-
-    return 0;
+    if(tree.remove(key))
+    {
+        cout << "Tree with " << key << " removed: ";
+        tree.printInOrder();
+    }
+    else
+    {
+        cout << key << " was not found in the tree.\n";
+    }
 }
