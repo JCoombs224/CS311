@@ -17,12 +17,14 @@ using namespace std;
 struct Node
 {
     int val;
+    int height;
     Node *left;
     Node *right;
 
     Node(int data)
     {
         val = data;
+        height = 0;
         left = NULL;
         right = NULL;
     }
@@ -44,7 +46,7 @@ struct TreeBranch
 
 class BST
 {
-    private:
+    protected:
         Node *root;
         int size = 0;
 
@@ -260,12 +262,102 @@ class BST
         }
 };
 
+class AVLTree : public BST
+{
+    private:
+        int getBalance(Node *node)
+        {
+            if(node == NULL)
+                return 0;
+            return height(node->left) - height(node->right);
+        }
+        Node* leftRotate(Node *z)
+        {
+            Node *y = z->right;
+            Node *T2 = y->left;
+            
+            // Perform rotation
+            y->left = z;
+            z->right = T2;
+
+            // Update heights
+            z->height = max(height(z->left), height(z->right)) + 1;
+            y->height = max(height(y->left), height(y->right)) + 1;
+
+            // Return new root
+            return y;
+        }
+        Node* rightRotate(Node *z)
+        {
+            Node *y = z->left;
+            Node *T3 = y->right;
+
+            // Perform rotation
+            y->right = z;
+            z->left = T3;
+
+            // Update heights
+            z->height = max(height(z->left), height(z->right)) + 1;
+            y->height = max(height(y->left), height(y->right)) + 1;
+
+            // Return new root
+            return y;
+        }
+    public:
+        int height(Node *node)
+        {
+            if(node == NULL)
+                return -1;
+            return node->height;
+        }
+        void insert(int key) // override
+        {
+            root = insert(root, key);
+            size++;
+        }
+        Node* insert(Node *node, int key) // override
+        {
+            if(node == NULL)
+                node = new Node(key);
+            else if(key <= node->val)
+                node->left = insert(node->left, key);
+            else if(key > node->val)
+                node->right = insert(node->right, key);
+            
+            node->height = 1 + max(height(node->left), height(node->right));
+
+            int balance = getBalance(node);
+
+            if(balance < -1 && key > node->right->val)
+                return leftRotate(node);
+
+            if(balance > 1 && key < node->left->val)
+                return rightRotate(node);
+            
+            if(balance < -1 && key < node->right->val)
+            {
+                node->right = rightRotate(node->right);
+                return leftRotate(node);
+            }
+            if(balance > 1 && key > node->left->val)
+            {
+                node->left = leftRotate(node->right);
+                return rightRotate(node);
+            }
+            return node;
+        }
+        /*Node* remove(Node *node, int key) // override
+        {
+
+        }*/
+};
+
 /*********** MAIN PROGRAM ***********/
-void traverseTree(BST&);
-void searchNode(BST&);
-void insertNode(BST&);
-void deleteNode(BST&);
-void displayTree(BST&);
+void traverseTree(AVLTree*);
+void searchNode(AVLTree*);
+void insertNode(AVLTree*);
+void deleteNode(AVLTree*);
+void displayTree(AVLTree*);
 
 int main()
 {
@@ -273,7 +365,7 @@ int main()
     string input, temp = "";
     int arr[50];
 
-    cout << "Enter up to 50 integers seperated by spaces to be added to BST: ";
+    cout << "Enter up to 50 integers seperated by spaces to be added to AVL BST: ";
     getline(cin, input);
 
     // Get set of integers from user.
@@ -310,18 +402,19 @@ int main()
         temp = "";
     }
 
-    BST tree;
+    AVLTree *tree = new AVLTree();
     // Now loop through list and insert into BST
     for(int i = 0; i < arrSize; i++)
-        tree.insert(arr[i]);
+        tree->insert(arr[i]);
 
     int selection;
     
     // Program loop
-    while(true)
+    bool quit = false;
+    while(!quit)
     {
         // Display operation menu
-        cout << "\nBinary Search Tree Operation Menu\n\n";
+        cout << "\nAVL Binary Search Tree Operation Menu\n\n";
         cout << "1. Tree Traversal\n";
         cout << "2. Search Node\n";
         cout << "3. Insert Node\n";
@@ -353,11 +446,12 @@ int main()
                 break;
             case 5:
                 cout << endl;
-                tree.printTree();
+                tree->printTree();
                 Sleep(2000);
                 break;
             case 6:
-                return 0;
+                quit = true;
+                break;
             default:
                 cerr << "Please enter a valid menu selection!\n\n";
                 Sleep(1000);
@@ -365,26 +459,27 @@ int main()
         }
     }
 
-    return 1;
+    delete tree;
+    return 0;
 }
 
-void traverseTree(BST &tree)
+void traverseTree(AVLTree *tree)
 {
     // 1. Tree Traversal
     cout << "\nPre-order tree traversal: "; 
-    tree.printPreOrder();
+    tree->printPreOrder();
     cout << "In-order tree traversal: "; 
-    tree.printInOrder();
+    tree->printInOrder();
     cout << "Post-order tree traversal: "; 
-    tree.printPostOrder();
+    tree->printPostOrder();
 }
-void searchNode(BST &tree)
+void searchNode(AVLTree *tree)
 {
     // 2. Searching
     int key;
     cout << "\nEnter an integer to search for in the tree: ";
     cin >> key;
-    Node *node = tree.search(key);
+    Node *node = tree->search(key);
 
     if(node == NULL)
         cout << key << " was not found in the BST.\n\n";
@@ -392,33 +487,33 @@ void searchNode(BST &tree)
     {
         cout << "Node with value " << key << " was found in BST.\n";
         cout << key << "'s sub-tree\n";
-        tree.printTree(node, nullptr, false);
+        tree->printTree(node, nullptr, false);
         /*cout << key << " left node value: ";
         if(node->left == NULL) cout << "NULL\n"; else cout << node->left->val << endl;
         cout << key << " right node value: ";
         if(node->right == NULL) cout << "NULL\n"; else cout << node->right->val << endl;*/
     }
 }
-void insertNode(BST &tree)
+void insertNode(AVLTree *tree)
 {
     // 3. Insertion
     int key;
     cout << "\nEnter a new value to be added into the binary tree: ";
     cin >> key;
-    tree.insert(key);
+    tree->insert(key);
     cout << "Tree with " << key << " inserted: ";
-    tree.printInOrder();
+    tree->printInOrder();
 }
-void deleteNode(BST &tree)
+void deleteNode(AVLTree *tree)
 {
     // 4. Deletion
     int key;
     cout << "\nEnter a value to be deleted from the tree: ";
     cin >> key;
-    if(tree.remove(key))
+    if(tree->remove(key))
     {
         cout << "Tree with " << key << " removed: ";
-        tree.printInOrder();
+        tree->printInOrder();
     }
     else
     {
