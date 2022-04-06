@@ -3,7 +3,6 @@
 // Email: coomb010@cougars.csusm.edu
 
 #include <iostream>
-#include <iomanip>
 #include <string>
 // used for sleep function
 #ifdef _WIN32
@@ -208,7 +207,6 @@ class BST
         {
             printTree(root, nullptr, false);
         }
-        // TODO: Make custom printing function
         // Helper function to print branches of the binary tree
         void showBranches(TreeBranch *p)
         {
@@ -346,10 +344,71 @@ class AVLTree : public BST
             }
             return node;
         }
-        /*Node* remove(Node *node, int key) // override
+        bool remove(int key)
         {
+            int oldSize = size;
+            root = remove(root, key);
 
-        }*/
+            return (oldSize != size); // returns t/f whether a node was deleted or not
+        }
+        Node* remove(Node *node, int key) // override
+        {
+            if(node == NULL)
+                return node;
+            if(node->val > key)
+                node->left = remove(node->left, key);
+            else if(node->val < key)
+                node->right = remove(node->right, key);
+            else
+            {
+                if(node->left == NULL)
+                {
+                    Node *temp = node->right;
+                    delete node;
+                    size--;
+                    return temp;
+                }
+                else if(node->right == NULL)
+                {
+                    Node *temp = node->left;
+                    delete node;
+                    size--;
+                    return temp;
+                }
+
+                Node *temp = rightmostNode(node->left);
+                node->val = temp->val;
+                node->left = remove(node->left, temp->val);
+            }
+            // Balancing
+            if(node == NULL)
+                return node;
+
+            // Update height of current node
+            node->height = 1 + max(height(node->left), height(node->right));
+
+            // Get the balance factor
+            int balance = getBalance(node);
+
+            // Left case
+            if(balance > 1 && getBalance(node->left) >= 0)
+                return rightRotate(node);
+            if(balance > 1 && getBalance(node->left) < 0)
+            {
+                node->left = leftRotate(node->left);
+                return rightRotate(node);
+            }
+            // Right case
+            if(balance < -1 && getBalance(node->right) <= 0)
+                return leftRotate(node);
+            if(balance < -1 && getBalance(node->right) > 0)
+            {
+                node->right = rightRotate(node->right);
+                return leftRotate(node);
+            }
+
+            return node;
+        }
 };
 
 /*********** MAIN PROGRAM ***********/
@@ -357,7 +416,6 @@ void traverseTree(AVLTree*);
 void searchNode(AVLTree*);
 void insertNode(AVLTree*);
 void deleteNode(AVLTree*);
-void displayTree(AVLTree*);
 
 int main()
 {
@@ -414,7 +472,7 @@ int main()
     while(!quit)
     {
         // Display operation menu
-        cout << "\nAVL Binary Search Tree Operation Menu\n\n";
+        cout << "\n****** AVL Binary Search Tree Operation Menu ******\n\n";
         cout << "1. Tree Traversal\n";
         cout << "2. Search Node\n";
         cout << "3. Insert Node\n";
@@ -488,10 +546,6 @@ void searchNode(AVLTree *tree)
         cout << "Node with value " << key << " was found in BST.\n";
         cout << key << "'s sub-tree\n";
         tree->printTree(node, nullptr, false);
-        /*cout << key << " left node value: ";
-        if(node->left == NULL) cout << "NULL\n"; else cout << node->left->val << endl;
-        cout << key << " right node value: ";
-        if(node->right == NULL) cout << "NULL\n"; else cout << node->right->val << endl;*/
     }
 }
 void insertNode(AVLTree *tree)
@@ -501,8 +555,8 @@ void insertNode(AVLTree *tree)
     cout << "\nEnter a new value to be added into the binary tree: ";
     cin >> key;
     tree->insert(key);
-    cout << "Tree with " << key << " inserted: ";
-    tree->printInOrder();
+    cout << "Tree with " << key << " inserted:\n";
+    tree->printTree();
 }
 void deleteNode(AVLTree *tree)
 {
@@ -512,8 +566,8 @@ void deleteNode(AVLTree *tree)
     cin >> key;
     if(tree->remove(key))
     {
-        cout << "Tree with " << key << " removed: ";
-        tree->printInOrder();
+        cout << "Tree with " << key << " removed:\n";
+        tree->printTree();
     }
     else
     {
