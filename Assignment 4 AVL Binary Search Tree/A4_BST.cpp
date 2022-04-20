@@ -13,6 +13,10 @@
 
 using namespace std;
 
+/**
+ * @brief Node struct for Binary Search Tree that contains an integer value and
+ *        pointers to left and right nodes.
+ */
 struct Node
 {
     int val;
@@ -30,6 +34,11 @@ struct Node
     ~Node(){}
 };
 
+/**
+ * @brief TreeBranch struct used for aiding in the printing of a BST in the form 
+ *        of the tree.
+ * 
+ */
 struct TreeBranch
 {
     TreeBranch *prev;
@@ -42,7 +51,10 @@ struct TreeBranch
     }
 };
 
-
+/**
+ * @brief BST - Binary Search Tree class.
+ * 
+ */
 class BST
 {
     protected:
@@ -260,6 +272,11 @@ class BST
         }
 };
 
+/**
+ * @brief AVLTree - Extends a normal Binary Search Tree class but allows for automatic
+ *        self-balancing of the tree, to allow for greatest possible efficiency.
+ * 
+ */
 class AVLTree : public BST
 {
     private:
@@ -272,7 +289,7 @@ class AVLTree : public BST
         Node* leftRotate(Node *z)
         {
             Node *y = z->right;
-            Node *T2 = y->left;
+            Node *T2 = y->left; // TODO: Exception: Segmentation with 5616 651 56103 123 56 156 56 231 231 123
             
             // Perform rotation
             y->left = z;
@@ -339,7 +356,7 @@ class AVLTree : public BST
             }
             if(balance > 1 && key > node->left->val)
             {
-                node->left = leftRotate(node->right);
+                node->left = leftRotate(node->left);
                 return rightRotate(node);
             }
             return node;

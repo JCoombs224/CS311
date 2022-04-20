@@ -73,7 +73,7 @@ struct LinkedList
         }
     }
     // Adds to the beginning of the list
-    void prependNode(T val)
+    void push_front(T val)
     {
         Node<T> *node = new Node<T>(val);
         node->val = val;
@@ -133,7 +133,7 @@ class Stack
         // Pushes an element to the top of the Stack
         void push(T val)
         {
-            list->prependNode(val);
+            list->push_front(val);
             size++;
         }
 
