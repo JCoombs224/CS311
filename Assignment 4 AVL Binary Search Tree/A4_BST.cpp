@@ -4,12 +4,6 @@
 
 #include <iostream>
 #include <string>
-// used for sleep function
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
 
 using namespace std;
 
@@ -505,31 +499,25 @@ int main()
         {
             case 1:
                 traverseTree(tree);
-                Sleep(2000);
                 break;
             case 2:
                 searchNode(tree);
-                Sleep(2000);
                 break;
             case 3:
                 insertNode(tree);
-                Sleep(2000);
                 break;
             case 4:
                 deleteNode(tree);
-                Sleep(2000);
                 break;
             case 5:
                 cout << endl;
                 tree->printTree();
-                Sleep(2000);
                 break;
             case 6:
                 quit = true;
                 break;
             default:
                 cerr << "Please enter a valid menu selection!\n\n";
-                Sleep(1000);
                 break;
         }
     }

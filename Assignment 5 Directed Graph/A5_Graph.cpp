@@ -114,6 +114,10 @@ class LinkedList
         }
 };
 
+/**
+ * @brief The Queue class is a singly LinkedList with queue functionality.
+ *        (First in first out functionality)
+ */
 class Queue
 {
     LinkedList<int> *list = new LinkedList<int>();
@@ -144,8 +148,14 @@ class Queue
 class Graph
 {
     int V; // num of vertices
-    LinkedList<int> *adj;
+    LinkedList<int> *adj; // Array of adjacency lists.
     
+    /**
+     * @brief Recursive helper function for DFS traversal.
+     * 
+     * @param v - starting vertex
+     * @param visited - array of vertices that have already been visited.
+     */
     void DFSUtil(int v, bool visited[])
     {
         visited[v] = true;
@@ -160,6 +170,14 @@ class Graph
             temp = temp->next;
         }
     }
+    /**
+     * @brief Recursive helper function to determine if the graph has a cycle or not.
+     * 
+     * @param v - starting node for DFS
+     * @param visited - array of visited vertices
+     * @return true - cycle is detected in the graph
+     * @return false - no cycle is detected in the graph.
+     */
     bool cycleUtil(int v, bool visited[])
     {
         visited[v] = true;
@@ -184,28 +202,40 @@ class Graph
             V = v;
             adj = new LinkedList<int>[V];
         }
+        /**
+         * @brief Adds a directed edge to the graph.
+         * 
+         * @param v - starting node
+         * @param w - ending node
+         */
         void addEdge(int v, int w)
         {
             adj[v].push_back(w);
         }
+        /**
+         * @brief Performs a Breadth-First Search from a given starting node.
+         * 
+         * @param s - starting node for BFS
+         */
         void BFS(int s)
         {
             bool *visited = new bool[V];
             for(int i = 0; i < V; i++)
                 visited[i] = false;
             Queue queue;
+            visited[s] = true;
             queue.push_back(s);
             
             while(!queue.empty())
             {
                 s = queue.popFront();
+                cout << s << ' ';
                 Node<int> *temp = adj[s].head;
                 while(temp != NULL)
                 {
                     int vertex = temp->val;
                     if(!visited[vertex])
                     {
-                        cout << s << ' ';
                         visited[vertex] = true;
                         queue.push_back(vertex);
                     }
@@ -213,6 +243,11 @@ class Graph
                 }
             }
         }
+        /**
+         * @brief Performs a Depth-First Search from a given starting node.
+         * 
+         * @param v - starting node for DFS
+         */
         void DFS(int v)
         {
             bool *visited = new bool[V];
@@ -233,18 +268,39 @@ class Graph
 
             for(int i = 0; i < V; i++)
             {
-                for(int i=0; i < V; i++)
-                    visited[i] = false;
+                for(int j=0; j < V; j++)
+                    visited[j] = false;
+                visited[i] = true;
                 
-                if(cycleUtil(i, visited))
-                    return true;
+                if(adj[i].head != NULL)
+                    if(cycleUtil(i, visited))
+                        return true;
             }
             return false;
         }
+        /**
+         * @brief Prints the adjacency lists for each vertex.
+         */
+        void printAdjacencyList()
+        {
+            Node<int> *temp;
+            for(int i = 0; i < V; i++)
+            {
+                temp = adj[i].head;
+                cout << i << ' ';
+                while(temp != NULL)
+                {
+                    cout << temp->val << ' ';
+                    temp = temp->next;
+                }
+                cout << endl;
+            }
+        }
 };
 
-bool addEdge(Graph&, int);
+int addEdge(Graph&, int); // main program helper function
 
+// main program
 int main()
 {
     int n;
@@ -264,30 +320,18 @@ int main()
     cout << "\n***** ADD EDGES ****\n";
     cout << "To add an edge enter the starting vertex then the ending vertex.\n\n";
 
-    // Add edges to thr graph
+    // Loop adding edges to the graph until user quits when returnType == 1
     while(!done)
     {
-        // Add edge and check for success - if not retry
-        if(!addEdge(graph, n))
+        // Get the result from the addEdge function
+        int returnType = addEdge(graph, n);
+        
+        if(returnType == -1) // Error adding edge loop again
             continue;
-        char sel;
-
-        // Ask if user would like to continue adding edges
-        while(true)
+        if(returnType == 1) // User quit adding new edges
         {
-            cout << "\nWould you like to add another edge? (y/n): ";
-            cin >> sel;
-            if(sel == 'y')
-                break;
-            if(sel == 'n')
-            {
-                done = true;
-                break;
-            }
-            else
-            {
-                cerr << "Error: Please enter either 'y' or 'n'.\n\n";
-            }
+            done = true;
+            break;
         }
     }
 
@@ -299,7 +343,8 @@ int main()
         cout << "2. BFS traversal\n";
         cout << "3. DFS traversal\n";
         cout << "4. Check for cycle\n";
-        cout << "5. Quit\n";
+        cout << "5. Print adjaceny list\n";
+        cout << "6. Quit\n";
 
         cout << "\nEnter Selection: ";
         cin >> selection;
@@ -340,6 +385,9 @@ int main()
                 cout << "No cycle detected in the graph.\n";
             break;
         case 5:
+            graph.printAdjacencyList();
+            break;
+        case 6:
             return 0;
         
         default:
@@ -352,25 +400,27 @@ int main()
     return 0;
 }
 
-bool addEdge(Graph &graph, int n)
+// main program helper function to add edge to a graph object.
+int addEdge(Graph &graph, int n)
 {
     int v, w;
-    cout << "Starting vertex: ";
-    cin >> v;
+    cout << "Enter starting vertex and ending vertex seperated by a single space (enter -1 in either to stop adding edges)\n";
+    cout << "New Edge: ";
+    
+    cin >> v >> w;
+    if(v == -1 || w == -1)
+        return 1;
     if(v >= n) // Check for valid vertex entered
     {
         cerr << "\nError: Starting vertex does not exist, vertex must be < " << n << "\n\n";
-        return false;
+        return -1;
     }
-
-    cout << "Ending vertex: ";
-    cin >> w;
     if(w >= n) // Check for valid vertex entered
     {
         cerr << "\nError: Ending vertex does not exist, vertex must be < " << n << "\n\n";
-        return false;
+        return -1;
     }
 
     graph.addEdge(v, w); // add current edge to the graph
-    return true;
+    return 0;
 }
