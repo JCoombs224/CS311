@@ -312,16 +312,15 @@ int main()
         cerr << "\nNumber of vertices must be greater than 0!\n";
         return -1;
     }
+    cout << "Vertices range from 0-" << n-1 << endl;
 
     // Create new graph with desired number of vertices
     Graph graph(n);
 
-    bool done = false;
     cout << "\n***** ADD EDGES ****\n";
-    cout << "To add an edge enter the starting vertex then the ending vertex.\n\n";
-
+    cout << "Enter starting vertex and ending vertex seperated by a single space (enter -1 in either to stop adding edges)\n\n";
     // Loop adding edges to the graph until user quits when returnType == 1
-    while(!done)
+    while(true)
     {
         // Get the result from the addEdge function
         int returnType = addEdge(graph, n);
@@ -330,7 +329,6 @@ int main()
             continue;
         if(returnType == 1) // User quit adding new edges
         {
-            done = true;
             break;
         }
     }
@@ -339,7 +337,7 @@ int main()
     while(true)
     {
         cout << "\n********** Graph Menu **********\n";
-        cout << "1. Add Edge\n";
+        cout << "1. Add Edges\n";
         cout << "2. BFS traversal\n";
         cout << "3. DFS traversal\n";
         cout << "4. Check for cycle\n";
@@ -354,9 +352,21 @@ int main()
         switch (selection)
         {
         case 1:
-            // Add edge and check for success - if not retry
-            if(!addEdge(graph, n))
-                continue;
+            cout << "\n***** ADD EDGES ****\n";
+            cout << "Enter starting vertex and ending vertex seperated by a single space (enter -1 in either to stop adding edges)\n\n";
+            // Loop adding edges to the graph until user quits when returnType == 1
+            while(true)
+            {
+                // Get the result from the addEdge function
+                int returnType = addEdge(graph, n);
+                
+                if(returnType == -1) // Error adding edge loop again
+                    continue;
+                if(returnType == 1) // User quit adding new edges
+                {
+                    break;
+                }
+            }
             break;
         case 2:
             cout << "Please enter starting vertex for BFS traversal: ";
@@ -404,18 +414,17 @@ int main()
 int addEdge(Graph &graph, int n)
 {
     int v, w;
-    cout << "Enter starting vertex and ending vertex seperated by a single space (enter -1 in either to stop adding edges)\n";
     cout << "New Edge: ";
     
     cin >> v >> w;
     if(v == -1 || w == -1)
         return 1;
-    if(v >= n) // Check for valid vertex entered
+    if(v < -1 || v >= n) // Check for valid vertex entered
     {
         cerr << "\nError: Starting vertex does not exist, vertex must be < " << n << "\n\n";
         return -1;
     }
-    if(w >= n) // Check for valid vertex entered
+    if(w < -1 || w >= n) // Check for valid vertex entered
     {
         cerr << "\nError: Ending vertex does not exist, vertex must be < " << n << "\n\n";
         return -1;
